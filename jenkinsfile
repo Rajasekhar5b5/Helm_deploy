@@ -39,7 +39,7 @@ pipeline {
           helm upgrade --install py-redis-release . \
             --namespace default
 
-          kubectl rollout status deployment/py-deploy
+          kubectl rollout status deployment/py-deploy-ns05
           kubectl get pods
           kubectl get svc
           kubectl get deployments

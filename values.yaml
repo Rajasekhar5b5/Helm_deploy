@@ -2,7 +2,7 @@
 replicaCount: 3
 
 pythonApp:
-  name: py-deploy
+  name: py-deploy-ns05
   labels: 
     label1: python-app
   image:
@@ -24,7 +24,7 @@ pythonApp:
     nodePort: 30105
 
 redis:
-  name: redis-deploy
+  name: redis-deploy-ns05
   image:
     repository: redis
     tag: "latest"
