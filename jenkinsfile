@@ -1,69 +1,50 @@
 pipeline {
+  agent { label 'ns05-kube' }
 
-  agent {label 'ns05-kube'}
- 
   stages {
- 
+
     stage('Checkout') {
-
       steps {
-
         git branch: 'main',
-                    credentialsId: 'ns05-github-cred',
-                    url: 'git@github.com:Rajasekhar5b5/K8s-python-radis-yaml1.git'
-
-      }
-
-    }
-    stage('Check the docker cli') {
-      steps {
-        sh "docker --version"
-        sh "docker ps -a"
+            credentialsId: 'ns05-github-cred',
+            url: 'git@github.com:Rajasekhar5b5/Helm_deploy.git'
       }
     }
-    stage('Build Docker Image') {
+
+    stage('Check Workspace') {
       steps {
         sh '''
-          docker build -t rajasekhar5b5/py-may26:$BUILD_NUMBER app
+          pwd
+          ls -la
+          find . -maxdepth 3 -type f
         '''
       }
     }
- 
-    stage('Check on Kubernetes') {
 
+    stage('Check Tools') {
       steps {
-
         sh '''
-         
+          helm version
           export KUBECONFIG=$HOME/k8s-3-node.conf
-          kubectl get pods
-
-          kubectl get svc
-
-          kubectl get deployments
-
+          kubectl get nodes
         '''
-
       }
-
     }
 
-    stage('Deploy - Template and Apply') {
-        steps {
-            sh '''
-            export KUBECONFIG=$HOME/k8s-3-node.conf
-            kubectl apply -f pv.yaml -f pvc.yaml -f py-service.yaml -f redis-service.yaml -f redis-deploy.yaml
-            export IMAGE_TAG=$BUILD_NUMBER
-            envsubst < py-deploy.yaml | kubectl apply -f -
-            kubectl rollout status deployment/py-deploy
-            '''
-        }
+    stage('Deploy with Helm') {
+      steps {
+        sh '''
+          export KUBECONFIG=$HOME/k8s-3-node.conf
+
+          helm upgrade --install py-redis-release . \
+            --namespace default
+
+          kubectl rollout status deployment/py-deploy
+          kubectl get pods
+          kubectl get svc
+          kubectl get deployments
+        '''
+      }
     }
- 
-
-
   }
-
 }
- 
- 

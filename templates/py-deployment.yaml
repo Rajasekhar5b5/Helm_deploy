@@ -5,20 +5,20 @@ metadata:
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
-    type: RollingUpdate
+    type: {{ .Values.strategy.type }}
     rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 1
+      maxUnavailable: {{ .Values.strategy.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ .Values.strategy.rollingUpdate.maxSurge }}
   selector:
     matchLabels:
-      app: {{ .Values.pythonApp.name }}
+      app: {{ .Values.pythonApp.labels.label1 }}
   template:
     metadata:
       labels:
         app: {{ .Values.pythonApp.labels.label1 }}
     spec:
       containers:
-        - name: {{ .Values.pythonApp.labels.label1 }}
+        - name: python-container
           image: "{{ .Values.pythonApp.image.repository }}:{{ .Values.pythonApp.image.tag }}"
           imagePullPolicy: {{ .Values.pythonApp.image.pullPolicy }}
           ports:
@@ -28,8 +28,8 @@ spec:
                 name: {{ .Values.configMap.name }}
           resources:
             requests:
-              cpu: "{{ .Values.pythonApp.resources.requests.cpu }}"
-              memory: "{{ .Values.pythonApp.resources.requests.memory }}"
+              cpu: {{ .Values.pythonApp.resources.requests.cpu | quote }}
+              memory: {{ .Values.pythonApp.resources.requests.memory | quote }}
             limits:
-              cpu: "{{ .Values.pythonApp.resources.limits.cpu }}"
-              memory: "{{ .Values.pythonApp.resources.limits.memory }}"
+              cpu: {{ .Values.pythonApp.resources.limits.cpu | quote }}
+              memory: {{ .Values.pythonApp.resources.limits.memory | quote }}

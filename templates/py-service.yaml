@@ -9,6 +9,4 @@ spec:
   ports:
     - port: {{ .Values.pythonApp.service.port }}
       targetPort: {{ .Values.pythonApp.service.targetPort }}
-      {{- if eq .Values.pythonApp.service.type "NodePort" }}
       nodePort: {{ .Values.pythonApp.service.nodePort }}
-      {{- end }}
